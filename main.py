@@ -3,6 +3,8 @@ from paddle import Paddle
 from ball import Ball
 import time
 
+from scoreboard import Scoreboard
+
 LEFT_PADDLE_STARTING_POSITION = (-350, 0)
 RIGHT_PADDLE_STARTING_POSITION = (350, 0)
 
@@ -12,7 +14,9 @@ BALL_MAX_WIDTH = 410
 BALL_MIN_WIDTH = -410
 
 # how ofter the screen renders in seconds - higher is slower
-GAME_SPEED = 0.05
+INITIAL_GAME_SPEED = 0.05
+GAME_SPEED_INCREASE = 0.9
+game_speed = INITIAL_GAME_SPEED
 
 screen = Screen()
 screen.setup(width=800, height=600)
@@ -21,6 +25,9 @@ screen.title("Python Pong")
 
 # Stops the screen from performing its normal rendering and animations
 screen.tracer(0)
+
+# Create scoreboard
+scoreboard = Scoreboard()
 
 # Create paddles and setup key listeners for their movement
 left_paddle = Paddle(LEFT_PADDLE_STARTING_POSITION)
@@ -43,7 +50,7 @@ ball = Ball()
 game_running = True
 while game_running:
     screen.update()
-    time.sleep(GAME_SPEED)
+    time.sleep(game_speed)
 
     left_paddle.move()
     right_paddle.move()
@@ -65,14 +72,20 @@ while game_running:
     if (left_paddle_left_x <= next_ball_x <= left_paddle_right_x
             and left_paddle_top_y >= next_ball_y >= left_paddle_bottom_y):
         ball.x_bounce()
+        game_speed *= GAME_SPEED_INCREASE
     if (right_paddle_left_x <= next_ball_x <= right_paddle_right_x
             and right_paddle_top_y >= next_ball_y >= right_paddle_bottom_y):
         ball.x_bounce()
+        game_speed *= GAME_SPEED_INCREASE
 
     if ball.xcor() > 400:
+        game_speed = INITIAL_GAME_SPEED
+        scoreboard.increase_left_score()
         ball.reset()
 
     if ball.xcor() < -400:
+        game_speed = INITIAL_GAME_SPEED
+        scoreboard.increase_right_score()
         ball.reset()
 
     ball.move()

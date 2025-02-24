@@ -69,6 +69,12 @@ while game_running:
             and right_paddle_top_y >= next_ball_y >= right_paddle_bottom_y):
         ball.x_bounce()
 
+    if ball.xcor() > 400:
+        ball.reset()
+
+    if ball.xcor() < -400:
+        ball.reset()
+
     ball.move()
 
 
